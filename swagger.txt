@@ -1,0 +1,481 @@
+openapi: "3.0.0"
+info:
+  title: "API de Comprobantes"
+  version: "1.0.0"
+paths:
+  /users:
+    post:
+      summary: Crear un nuevo usuario
+      description: Esta API, solo se creo para motivo de pruebas y se utiliza para crear un nuevo usuario en el sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Nombre del usuario
+                email:
+                  type: string
+                  description: Correo electrónico del usuario
+                  format: email
+                password:
+                  type: string
+                  description: Contraseña del usuario
+                  minLength: 8
+              required:
+                - name
+                - email
+                - password
+      responses:
+        201:
+          description: Usuario creado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Usuario creado con éxito
+                  user:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      email:
+                        type: string
+                      password:
+                        type: string
+
+  /login:
+    post:
+      summary: Inicio de sesión y obtención del JWT
+      description: Esta API se utiliza para iniciar sesión en el sistema y obtener un token JWT.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Correo electrónico del usuario
+                  format: email
+                password:
+                  type: string
+                  description: Contraseña del usuario
+              required:
+                - email
+                - password
+      responses:
+        200:
+          description: Inicio de sesión exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNjkyMzA1Mzg5LCJleHAiOjE2OTIzMDg5ODksIm5iZiI6MTY5MjMwNTM4OSwianRpIjoiN1k2Q1N2Zk16QkFvTHFJQiIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.ET4KXkYjLiqBy5nlGeT8uiZ_aCp4GZqt1YmxDsSLLv4"
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: "John Doe"
+        401:
+          description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Credenciales inválidas"
+        500:
+          description: No se pudo crear el token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No se pudo crear el token"
+
+  /logout:
+    post:
+      summary: Cierre de sesión e invalidación del JWT
+      description: Esta API se utiliza para cerrar la sesión en el sistema e invalidar el token JWT.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Cierre de sesión exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logout exitoso"
+        500:
+          description: Error en el cierre de sesión
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+
+  /comprobantes:
+    post:
+      summary: Registrar uno o varios comprobantes
+      description: Esta API se utiliza para registrar uno o varios comprobantes enviando archivos XML.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                xml_file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        201:
+          description: Comprobantes registrados con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comprobantes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        issuer_name:
+                          type: string
+                        issuer_document_type:
+                          type: string
+                        issuer_document_number:
+                          type: string
+                        receiver_name:
+                          type: string
+                        receiver_document_type:
+                          type: string
+                        receiver_document_number:
+                          type: string
+                        total_amount:
+                          type: string
+                        user_id:
+                          type: integer
+                        updated_at:
+                          type: string
+                          format: date-time
+                        created_at:
+                          type: string
+                          format: date-time
+                        id:
+                          type: integer
+                        articulos:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                              comprobante_id:
+                                type: integer
+                              nombre:
+                                type: string
+                              cantidad:
+                                type: integer
+                              precio:
+                                type: string
+                              created_at:
+                                type: string
+                                format: date-time
+                              updated_at:
+                                type: string
+                                format: date-time
+                  correo_enviado:
+                    type: boolean
+                  mensaje:
+                    type: string
+        400:
+          description: Error en el procesamiento del archivo XML
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+
+                    
+
+    get:
+      summary: Listar comprobantes de forma paginada
+      description: >
+        Devuelve una lista de comprobantes con paginación. Se puede acceder a diferentes
+        páginas especificando el número de página en la URL, por ejemplo: `/comprobantes?page=1`.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Número de página a recuperar
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de comprobantes paginados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  current_page:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        user_id:
+                          type: integer
+                        issuer_name:
+                          type: string
+                        issuer_document_type:
+                          type: string
+                        issuer_document_number:
+                          type: string
+                        receiver_name:
+                          type: string
+                        receiver_document_type:
+                          type: string
+                        receiver_document_number:
+                          type: string
+                        total_amount:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
+                  first_page_url:
+                    type: string
+                  from:
+                    type: integer
+                  last_page:
+                    type: integer
+                  last_page_url:
+                    type: string
+                  links:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                        label:
+                          type: string
+                        active:
+                          type: boolean
+                  next_page_url:
+                    type: string
+                  path:
+                    type: string
+                  per_page:
+                    type: integer
+                  prev_page_url:
+                    type: string
+                  to:
+                    type: integer
+                  total:
+                    type: integer
+
+  /comprobantes/{id}:
+    get:
+      summary: Obtener detalles de un comprobante específico
+      description: Devuelve los detalles de un comprobante específico según el ID proporcionado.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID del comprobante
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalles del comprobante
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  user_id:
+                    type: integer
+                  issuer_name:
+                    type: string
+                  issuer_document_type:
+                    type: string
+                  issuer_document_number:
+                    type: string
+                  receiver_name:
+                    type: string
+                  receiver_document_type:
+                    type: string
+                  receiver_document_number:
+                    type: string
+                  total_amount:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+        '404':
+          description: Comprobante no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    
+    delete:
+      summary: "Eliminar un comprobante"
+      description: "Esta ruta se utiliza para eliminar un comprobante específico según el ID proporcionado."
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID del comprobante"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        '200':
+          description: "Comprobante eliminado con éxito"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  mensaje:
+                    type: "string"
+        '404':
+          description: "Comprobante no encontrado"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  mensaje:
+                    type: "string"
+                    
+  /articulo/{nombreArticulo}/monto-total:
+    get:
+      summary: "Monto total por artículo de un usuario en específico"
+      description: "Esta ruta se utiliza para obtener el monto total de un artículo específico para el usuario autenticado."
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "nombreArticulo"
+          in: "path"
+          description: "Nombre del artículo"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        '200':
+          description: "Monto total y mensaje"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  mensaje:
+                    type: "string"
+                  montoTotal:
+                    type: "number"
+                    format: "float"
+        '404':
+          description: "No se encontraron comprobantes para este usuario o no se encontraron artículos con el nombre especificado"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  mensaje:
+                    type: "string"
+                    
+  /comprobantes/monto/total:
+    get:
+      summary: "Monto total acumulado por todos los comprobantes de un usuario específico"
+      description: "Esta ruta se utiliza para obtener el monto total acumulado por todos los comprobantes para el usuario autenticado."
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: "Monto total y mensaje"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  mensaje:
+                    type: "string"
+                  total_amount:
+                    type: "string"
+        '404':
+          description: "Usuario no encontrado o no se encontraron comprobantes para el usuario"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  mensaje:
+                    type: "string"
+
+
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+
+
+          
+  
