@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Illuminate\Notifications\Notifiable;
@@ -22,6 +23,7 @@ class User extends AuthUser implements JWTSubject
     use HasApiTokens;
     use HasFactory;
     use Notifiable;
+    use HasUuids;
 
     protected $fillable = [
         'name',

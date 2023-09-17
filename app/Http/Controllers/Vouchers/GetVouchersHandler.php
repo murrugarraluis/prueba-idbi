@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Vouchers;
 
 use App\Http\Requests\Vouchers\GetVouchersRequest;
-use App\Models\Voucher;
+use App\Http\Resources\Vouchers\VoucherResource;
 use App\Services\VoucherService;
 use Illuminate\Http\Response;
 
@@ -21,7 +21,7 @@ class GetVouchersHandler
         );
 
         return response([
-            'data' => $vouchers,
+            'data' => VoucherResource::collection($vouchers),
         ], 200);
     }
 }

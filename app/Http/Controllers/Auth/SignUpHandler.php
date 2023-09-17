@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Requests\Auth\SignUpRequest;
+use App\Http\Resources\Users\UserResource;
 use App\Models\User;
 use Illuminate\Http\Response;
 
@@ -17,7 +18,7 @@ class SignUpHandler
         ]);
 
         return response([
-            'data' => $user
+            'data' => UserResource::make($user)
         ], 201);
     }
 }

@@ -13,7 +13,7 @@ class VoucherService
 {
     public function getVouchers(int $page, int $paginate): LengthAwarePaginator
     {
-        return Voucher::paginate(perPage: $paginate, page: $page);
+        return Voucher::with(['lines', 'user'])->paginate(perPage: $paginate, page: $page);
     }
 
     /**
@@ -58,6 +58,7 @@ class VoucherService
             'xml_content' => $xmlContent,
             'user_id' => $user->id,
         ]);
+        $voucher->save();
 
         foreach ($xml->xpath('//cac:InvoiceLine') as $invoiceLine) {
             $name = (string) $invoiceLine->xpath('cac:Item/cbc:Description')[0];
@@ -73,8 +74,6 @@ class VoucherService
 
             $voucherLine->save();
         }
-
-        $voucher->save();
 
         return $voucher;
     }

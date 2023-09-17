@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Vouchers;
 
+use App\Http\Resources\Vouchers\VoucherResource;
 use App\Services\VoucherService;
 use Exception;
 use Illuminate\Http\Request;
@@ -18,6 +19,10 @@ class StoreVouchersHandler
         try {
             $xmlFiles = $request->file('files');
 
+            if (!is_array($xmlFiles)) {
+                $xmlFiles = [$xmlFiles];
+            }
+
             $xmlContents = [];
             foreach ($xmlFiles as $xmlFile) {
                 $xmlContents[] = file_get_contents($xmlFile->getRealPath());
@@ -27,7 +32,7 @@ class StoreVouchersHandler
             $vouchers = $this->voucherService->storeVouchersFromXmlContents($xmlContents, $user);
 
             return response([
-                'data' => $vouchers,
+                'data' => VoucherResource::collection($vouchers),
             ], 201);
         } catch (Exception $exception) {
             return response([

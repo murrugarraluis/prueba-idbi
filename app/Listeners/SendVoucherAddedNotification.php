@@ -4,9 +4,10 @@ namespace App\Listeners;
 
 use App\Events\Vouchers\VouchersCreated;
 use App\Mail\VouchersCreatedMail;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Mail;
 
-class SendVoucherAddedNotification
+class SendVoucherAddedNotification implements ShouldQueue
 {
     public function handle(VouchersCreated $event): void
     {
