@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Comprobante;
+use App\Models\Voucher;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ComprobanteFactory extends Factory
@@ -12,7 +12,7 @@ class ComprobanteFactory extends Factory
      *
      * @var string
      */
-    protected $model = Comprobante::class;
+    protected $model = Voucher::class;
 
     /**
      * Define el estado predeterminado del modelo.
@@ -29,7 +29,7 @@ class ComprobanteFactory extends Factory
             'receiver_document_type' => $this->faker->randomElement(['DNI', 'RUC', 'PAS']),
             'receiver_document_number' => $this->faker->randomNumber(8),
             'total_amount' => $this->faker->randomFloat(2, 10, 1000), // Genera un número flotante con 2 decimales entre 10 y 1000
-            'user_id' => \App\Models\User::factory(), 
+            'user_id' => \App\Models\User::factory(),
         ];
     }
 }
