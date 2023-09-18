@@ -33,26 +33,26 @@ php artisan migrate
 
 ## Nuevas funcionalidades
 
-1. Registro de serie, número, tipo del comprobante y moneda
+### 1. Registro de serie, número, tipo del comprobante y moneda
 
 Se desea poder registrar la serie, número, tipo de comprobante y moneda. Para comprobantes existentes, debería extraerse esa información a regularizar desde el campo xml_content de vouchers.
 
-2. Carga de comprobantes en segundo plano
+### 2. Carga de comprobantes en segundo plano
 
 Actualmente el registro de comprobantes se realiza en primer plano, se desea que se realice en segundo plano.
 Además, en lugar de enviar una notificación por correo para informar subida de comprobantes, ahora deberá enviar dos listados de comprobantes:
 - Los que se subieron correctamente
 - Los que no pudieron registrarse (y la razón)
 
-3. Endpoint de montos totales
+### 3. Endpoint de montos totales
 
 Se necesita un nuevo endpoint que devuelva la información total acumulada en soles y dólares.
 
-4. Eliminación de comprobantes
+### 4. Eliminación de comprobantes
 
 Se necesita poder eliminar comprobantes por su id.
 
-5. Filtro en listado de comprobantes
+### 5. Filtro en listado de comprobantes
 
 Se necesita poder filtrar en el endpoint de listado por serie, número y por un rango de fechas (que actuarán sobre las fechas de creación).
 
@@ -68,4 +68,4 @@ Deberás enviar el reto a través de una Pull Request a este repositorio. Puedes
 
 ## ¿Tienes alguna duda?
 
-Puedes enviar un correo a `ignacioruedaboada@gmail.com` enviando tus consultas y se te responderá a la brevedad.
+Puedes enviar un correo a `ignacioruedaboada@gmail.com` o a `anthony.rosado747@gmail.com` enviando tus consultas y se te responderá a la brevedad.
