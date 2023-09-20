@@ -9,14 +9,35 @@ use App\Models\VoucherLine;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use SimpleXMLElement;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class VoucherService
 {
-    public function getVouchers(int $page, int $paginate): LengthAwarePaginator
+    public function getVouchers(
+        int $page,
+        int $paginate,
+        ?string $serie,
+        ?string $number,
+        ?string $start_date,
+        ?string $end_date
+    ): LengthAwarePaginator
     {
-        return Voucher::with(['lines', 'user'])->paginate(perPage: $paginate, page: $page);
+        $query = Voucher::query();
+
+        if ($serie) {
+            $query->where('serie', $serie);
+        }
+        if ($number) {
+            $query->where('number', $number);
+        }
+
+        if ($start_date && $end_date) {
+            $query->whereBetween(DB::raw('DATE(created_at)'), [$start_date, $end_date]);
+        }
+
+        return $query->paginate(perPage: $paginate, page: $page);
     }
 
     /**
