@@ -8,7 +8,9 @@ use App\Models\Voucher;
 use App\Models\VoucherLine;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Response;
 use SimpleXMLElement;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class VoucherService
 {
@@ -99,5 +101,23 @@ class VoucherService
         }
 
         return $voucher;
+    }
+
+    public function deleteVoucherById(string $id): object
+    {
+        try {
+            $voucher = Voucher::findOrFail($id);
+            $voucher->delete();
+
+            return (object)[
+                'message' => 'Voucher successfully deleted.',
+                'status_code' => ResponseAlias::HTTP_OK,
+            ];
+        } catch (\Exception $e) {
+            return (object)[
+                'message' => 'Unable to delete voucher. Error: ' . $e->getMessage(),
+                'status_code' => ResponseAlias::HTTP_INTERNAL_SERVER_ERROR,
+            ];
+        }
     }
 }
