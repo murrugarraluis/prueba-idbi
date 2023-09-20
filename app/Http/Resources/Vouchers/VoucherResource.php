@@ -19,6 +19,10 @@ class VoucherResource extends JsonResource
     {
         return [
             'id' => $this->resource->id,
+            'serie'=>$this->resource->serie,
+            'number'=>$this->resource->number,
+            'type_code'=>$this->resource->type_code,
+            'currency_code'=>$this->resource->currency_code,
             'issuer_name' => $this->resource->issuer_name,
             'issuer_document_type' => $this->resource->issuer_document_type,
             'issuer_document_number' => $this->resource->issuer_document_number,

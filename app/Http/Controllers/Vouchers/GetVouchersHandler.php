@@ -16,8 +16,8 @@ class GetVouchersHandler
     public function __invoke(GetVouchersRequest $request): Response
     {
         $vouchers = $this->voucherService->getVouchers(
-            $request->query('page'),
-            $request->query('paginate'),
+            intval($request->query('page')),
+            intval($request->query('paginate'))
         );
 
         return response([

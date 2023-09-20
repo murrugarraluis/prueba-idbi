@@ -10,6 +10,10 @@ return new class extends Migration
     {
         Schema::create('vouchers', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->string('serie');
+            $table->string('number');
+            $table->string('type_code');
+            $table->string('currency_code');
             $table->string('issuer_name');
             $table->string('issuer_document_type');
             $table->string('issuer_document_number');
