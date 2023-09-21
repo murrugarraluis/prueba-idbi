@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\Currency;
 use App\Events\Vouchers\VouchersCreated;
 use App\Models\User;
 use App\Models\Voucher;
@@ -140,5 +141,26 @@ class VoucherService
                 'status_code' => ResponseAlias::HTTP_INTERNAL_SERVER_ERROR,
             ];
         }
+    }
+    public function getTotalAmount(): object
+    {
+
+        $PEN = Currency::PEN->value;
+        $USD = Currency::USD->value;
+
+        $user = auth()->user();
+
+        $vouchers = $user->vouchers
+            ->whereIn('currency_code', [$PEN, $USD])
+            ->groupBy('currency_code');
+
+        $totals = $vouchers->map(function ($vouchers) {
+            return $vouchers->sum('total_amount');
+        });
+
+        return (object)[
+            'pen_total' => $totals->get($PEN, 0.0),
+            'usd_total' => $totals->get($USD, 0.0),
+        ];
     }
 }

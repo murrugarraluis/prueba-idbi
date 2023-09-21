@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('vouchers')->group(
     function () {
         Route::get('/', GetVouchersHandler::class);
-        Route::post('/', StoreVouchersHandler::class);
+        Route::get('/total-amount', [GetVouchersHandler::class, 'getTotalAmount']);
+        Route::post('/', StoreVouchersHandler::class, 's');
         Route::delete('/{id}', DeleteVoucherHandler::class);
     }
 );
