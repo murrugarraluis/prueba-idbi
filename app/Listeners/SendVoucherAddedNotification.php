@@ -11,7 +11,10 @@ class SendVoucherAddedNotification implements ShouldQueue
 {
     public function handle(VouchersCreated $event): void
     {
-        $mail = new VouchersCreatedMail($event->vouchers, $event->user);
+        $mail = new VouchersCreatedMail(
+            $event->vouchers,
+            $event->vouchers_failed,
+            $event->user);
         Mail::to($event->user->email)->send($mail);
     }
 }

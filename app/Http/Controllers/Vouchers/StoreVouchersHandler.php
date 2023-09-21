@@ -3,15 +3,18 @@
 namespace App\Http\Controllers\Vouchers;
 
 use App\Http\Resources\Vouchers\VoucherResource;
+use App\Jobs\ProcessStoreVouchers;
 use App\Services\VoucherService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class StoreVouchersHandler
 {
-    public function __construct(private readonly VoucherService $voucherService)
+    public function __construct()
     {
+        //blank
     }
 
     public function __invoke(Request $request): Response
@@ -27,17 +30,17 @@ class StoreVouchersHandler
             foreach ($xmlFiles as $xmlFile) {
                 $xmlContents[] = file_get_contents($xmlFile->getRealPath());
             }
-
             $user = auth()->user();
-            $vouchers = $this->voucherService->storeVouchersFromXmlContents($xmlContents, $user);
+            // Started Job
+            ProcessStoreVouchers::dispatch($xmlContents, $user);
 
             return response([
-                'data' => VoucherResource::collection($vouchers),
-            ], 201);
+                'message' => 'The data upload is being processed in the background.',
+            ], ResponseAlias::HTTP_OK);
         } catch (Exception $exception) {
             return response([
                 'message' => $exception->getMessage(),
-            ], 400);
+            ], ResponseAlias::HTTP_BAD_REQUEST);
         }
     }
 }
